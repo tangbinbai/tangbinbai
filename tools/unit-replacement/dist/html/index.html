@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html data-use-rem>
+  <head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <title>标题</title>
+    <link rel="stylesheet" href="../css/index.css">
+  </head>
+  <body ontouchstart="">
+    <!--文本框组件-->
+    <textarea id="input" placeholder="输入（待替换文本）" class="textarea c-border-tb"></textarea>
+    <!--文本框组件-->
+    <textarea id="output" placeholder="输出（替换结果）" class="textarea c-border-tb"></textarea>
+    <!--文本框组件-->
+    <textarea id="formula" placeholder="替换公式" value="23234" contentEditable="true" class="code c-border-tb">
+      inputValue.replace(/([0-9.]+)(px)/g,function(a,b,c){
+         if(b==1){
+             return "1px";
+         }
+         return b/100+"rem";
+      })
+    </textarea>
+    <div class="change-wrap">
+      <button id="change" class="lm-btn lm-btn-primary lm-btn-lg">替换</button>
+    </div>
+    <script>
+      const input=document.getElementById("input");
+      const output=document.getElementById("output");
+      const change=document.getElementById("change");
+      const formula= document.getElementById("formula");
+      change.addEventListener("click",function(){
+          let replacedValue='';
+          let replaceFun=`
+              (function(){
+                  return function(inputValue){
+                      return ${formula.value}
+                  }
+              })()
+          `;
+          replacedValue = eval(replaceFun)(input.value)
+          output.value=replacedValue;
+      })
+    </script>
+  </body>
+</html>
