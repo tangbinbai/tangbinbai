@@ -1,0 +1,60 @@
+<p>&lt;!--</p>
+<ul>
+<li>@Author: your name</li>
+<li>@Date: 2021-08-27 23:22:37</li>
+<li>@LastEditTime: 2021-09-20 04:44:50</li>
+<li>@LastEditors: Please set LastEditors</li>
+<li>@Description: In User Settings Edit</li>
+<li>@FilePath: /knowledge/shell/learn.md
+--&gt;<h1 id="shell-">shell编程</h1>
+</li>
+</ul>
+<h2 id="echo">echo</h2>
+<pre><code>echo 我的名字:
+echo &#39;我的名字:&#39;
+echo &quot;我的名字：&quot;
+
+all output:
+我的名字:
+</code></pre><h2 id="variable">variable</h2>
+<p>  直接定义，一般大写</p>
+<h2 id="for">for</h2>
+<pre><code>FILES=$(ls)
+echo $FILES
+for File in $FILES
+  do
+    echo $File
+done
+
+output:
+learn.html      learn.md        learn.sh  
+</code></pre><h2 id="while">while</h2>
+<pre><code>LINE=1
+while read -r CURRENT_LINE
+  do 
+    echo &quot;$LINE: $CURRENT_LINE&quot;
+    ((LINE++))
+  done &lt; &#39;./test.txt&#39;
+
+output:
+1: 英文的gentleman是指英国绅士，
+2: 他们通常会手拿文明棍，
+3: 头戴大礼帽，身着笔挺的西装，
+4: 足蹬亮皮鞋。
+</code></pre><h2 id="funciton">funciton</h2>
+<pre><code>function sayHello(){
+  echo &quot;hello bowentang&quot;
+}
+sayHello
+
+output:
+hello bowentang
+</code></pre><h2 id="function-params">function params</h2>
+<pre><code>function sayHello(){
+  echo &quot;hello $1, $2&quot;
+}
+sayHello &quot;bowentang&quot; &quot;welcome!&quot;
+
+output:
+hello bowentang, welcome!
+</code></pre>

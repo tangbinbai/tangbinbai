@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>2-1 Rendering a Square</title>
+        <script type="text/javascript">
+            /**
+             * 辅助模块
+             * @author: gonghao.gh
+             * @date: 2013-11-26
+             */
+
+            KISSY.add(function(S) {
+
+                window.requestAnimFrame = (function() {
+                    return window.requestAnimationFrame ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame ||
+                        window.oRequestAnimationFrame ||
+                        window.msRequestAnimationFrame ||
+                        function(callback) {
+                            window.setTimeout(callback, 1000/60);
+                        };
+                })();
+
+                var Utils = {
+
+                    getGLContext: function(name) {
+                        var canvas = document.getElementById(name);
+                        var ctx = null;
+
+                        if (canvas == null) {
+                            alert("Error! There is no canvas on this page.");
+                            return null;
+                        } else {
+                            c_width = canvas.width;
+                            c_height = canvas.height;
+                        }
+
+                        var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
+
+                        for (var i = 0, l = names.length; i < l; i++) {
+                            try {
+                                ctx = canvas.getContext(names[i]);
+                            } catch(e) {}
+
+                            if (ctx) {
+                                break;
+                            }
+                        }
+                        if (ctx == null) {
+                            alert("Error! Could not initialize WebGL.");
+                            return null;
+                        } else {
+                            return ctx;
+                        }
+                    },
+
+                    calculateNormals : function(vs, ind){
+                        var x=0;
+                        var y=1;
+                        var z=2;
+
+                        var ns = [];
+                        for(var i=0;i<vs.length;i=i+3){ //for each vertex, initialize normal x, normal y, normal z
+                            ns[i+x]=0.0;
+                            ns[i+y]=0.0;
+                            ns[i+z]=0.0;
+                        }
+
+                        for(var i=0;i<ind.length;i=i+3){ //we work on triads of vertices to calculate normals so i = i+3 (i = indices index)
+                            var v1 = [];
+                            var v2 = [];
+                            var normal = [];
+                            //p2 - p1
+                            v1[x] = vs[3*ind[i+2]+x] - vs[3*ind[i+1]+x];
+                            v1[y] = vs[3*ind[i+2]+y] - vs[3*ind[i+1]+y];
+                            v1[z] = vs[3*ind[i+2]+z] - vs[3*ind[i+1]+z];
+                            //p0 - p1
+                            v2[x] = vs[3*ind[i]+x] - vs[3*ind[i+1]+x];
+                            v2[y] = vs[3*ind[i]+y] - vs[3*ind[i+1]+y];
+                            v2[z] = vs[3*ind[i]+z] - vs[3*ind[i+1]+z];
+                            //cross product by Sarrus Rule
+                            normal[x] = v1[y]*v2[z] - v1[z]*v2[y];
+                            normal[y] = v1[z]*v2[x] - v1[x]*v2[z];
+                            normal[z] = v1[x]*v2[y] - v1[y]*v2[x];
+                            for(j=0;j<3;j++){ //update the normals of that triangle: sum of vectors
+                                ns[3*ind[i+j]+x] =  ns[3*ind[i+j]+x] + normal[x];
+                                ns[3*ind[i+j]+y] =  ns[3*ind[i+j]+y] + normal[y];
+                                ns[3*ind[i+j]+z] =  ns[3*ind[i+j]+z] + normal[z];
+                            }
+                        }
+                        //normalize the result
+                        for(var i=0;i<vs.length;i=i+3){ //the increment here is because each vertex occurs with an offset of 3 in the array (due to x, y, z contiguous values)
+
+                            var nn=[];
+                            nn[x] = ns[i+x];
+                            nn[y] = ns[i+y];
+                            nn[z] = ns[i+z];
+
+                            var len = Math.sqrt((nn[x]*nn[x])+(nn[y]*nn[y])+(nn[z]*nn[z]));
+                            if (len == 0) len = 1.0;
+
+                            nn[x] = nn[x]/len;
+                            nn[y] = nn[y]/len;
+                            nn[z] = nn[z]/len;
+
+                            ns[i+x] = nn[x];
+                            ns[i+y] = nn[y];
+                            ns[i+z] = nn[z];
+                        }
+
+                        return ns;
+                    }
+                };
+
+                return Utils;
+            });
+        </script>
+        <script id="shader-vs" type="x-shader/x-vertex">
+            attribute vec3 aVertexPosition;
+            void main(void) {
+                gl_Position = vec4(aVertexPosition, 1.0);
+            }
+        </script>
+        <script id="shader-fs" type="x-shader/x-fragment">
+            #ifdef GL_ES
+            precision highp float;
+            #endif
+            void main(void) {
+                gl_FragColor = vec4(0.5, 0.5, 1.0, 1.0);
+            }
+        </script>
+        <script>
+            var gl = null,
+                prg = null,
+                c_width = 0,
+                c_height = 0;
+            var squareVertexBuffer = null,
+                squareIndexBuffer = null;
+            var vertices = [],
+                indices = [];
+            function initProgram() {
+                var vxShader = utils.getShader(gl, "shader-vs"),
+                    fgShader = utils.getShader(gl, "shader-fs");
+                prg = gl.createProgram();
+                gl.attachShader(prg, vxShader);
+                gl.attachShader(prg, fgShader);
+                gl.linkProgram(prg);
+                if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
+                    alert("Could not initialize shaders.");
+                }
+                gl.useProgram(prg);
+                prg.vertexPosition = gl.getAttribLocation(prg, "aVertexPostion");
+            }
+            /*
+             * Creates the buffers that contain the geometry of the square
+             *
+             *   #0 (-0.5,0.5) +--------------+  (0.5,0.5)  #3
+             *               |              |
+             *               |              |
+             *               |      .(0,0)  |
+             *               |              |
+             *               |              |
+             *   #1(-0.5,-0.5) +--------------+  (0.5,-0.5) #2
+             */
+            function initBuffers() {
+                vertices = [
+                    -0.5, 0.5, 0.0,     //Vertex 0
+                    -0.5, -0.5, 0.0,    //Vertex 1
+                    0.5, -0.5, 0.0,     //Vertex 2
+                    0.5, 0.5, 0.0       //Vertex 3
+                ];
+                indices = [3, 2, 1, 3, 1, 0];
+                squareVertexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                squareIndexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, squareIndexBuffer);
+                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+            }
+            function drawScene() {
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.enable(gl.DEPTH_TEST);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+                gl.viewport(0, 0, c_width, c_height);
+                gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
+                gl.vertexAttribPointer(prg.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(prg.aVertexPosition);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, squareIndexBuffer);
+                gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+            }
+            function renderLoop() {
+                utils.requestAnimFrame(renderLoop);
+                drawScene();
+            }
+            function runWebGLApp() {
+                gl = utils.getGLContext("canvas-element-id");
+                initProgram();
+                initBuffers();
+                renderLoop();
+            }
+        </script>
+    </head>
+    <body onLoad="runWebGLApp()">
+        <canvas id="canvas-element-id" width="480" height="400">
+            Your browser does not support HTML5 canvas.
+        </canvas>
+    </body>
+</html>

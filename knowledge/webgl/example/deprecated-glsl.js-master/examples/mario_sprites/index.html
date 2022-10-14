@@ -1,0 +1,194 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mario sprites</title>
+  <style type="text/css">
+    html, body {
+      background: black;
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="viewport" height="400"></canvas>
+
+<script id="fragment" type="x-shader/x-fragment">
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define MAX_MARIOS 20
+
+struct ConstantSpritesheet {
+  vec2 size; // size of img in pixels
+  vec2 tileSize; // size of one tile in pixels
+};
+
+uniform vec2 resolution;
+uniform float time;
+uniform ConstantSpritesheet marioSpriteInfos;
+uniform sampler2D marioSpriteSampler; // sprite image
+
+// Spritesheets
+vec4 drawSprite (vec2 p, ConstantSpritesheet s, sampler2D img, ivec2 tile, vec2 pos, vec2 size) {
+  vec2 absP = p*resolution.xy;
+  bool inSprite = all(lessThan(pos, absP)) && all(lessThan(absP, pos+size));
+  if (inSprite) {
+    vec2 tileRatio = s.tileSize/s.size;
+    vec2 tilePosition = vec2(tile)*tileRatio;
+    p -= pos/resolution.xy;
+    p /= size/resolution.xy;
+    return texture2D(img, p*tileRatio+tilePosition);
+  }
+  else {
+    return vec4(0.0, 0.0, 0.0, 0.0);
+  }
+}
+vec4 drawSprite (vec2 p, ConstantSpritesheet s, sampler2D img, ivec2 tile, vec2 pos) {
+  return drawSprite(p, s, img, tile, pos, s.tileSize);
+}
+
+// ~~~
+
+struct Mario {
+  vec2 position; // in pixels
+  vec2 size; // in pixels
+  vec2 tile;
+  float colorRandom;
+};
+
+uniform Mario marios[MAX_MARIOS];
+uniform int mariosLength;
+
+
+void main (void) {
+  vec2 p = ( gl_FragCoord.xy / resolution.xy );
+  vec3 sky = vec3(0.8, 0.9, 1.0);
+
+  if (gl_FragCoord.y < 64.)
+    gl_FragColor = vec4(sky*0.9, 1.0);
+  else if (gl_FragCoord.y < 192.)
+    gl_FragColor = vec4(sky*1.0, 1.0);
+  else
+    gl_FragColor = vec4(sky*1.1, 1.0);
+
+  for (int i=0; i<MAX_MARIOS; i++) { if (i>=mariosLength) break;
+    Mario m = marios[i];
+    vec2 absP = p*resolution.xy;
+    vec4 c = drawSprite(p, marioSpriteInfos, marioSpriteSampler, ivec2(m.tile), m.position, m.size);
+    c.rgb += 0.3*vec3(m.colorRandom, 1.0-m.colorRandom, 0.0);
+    gl_FragColor = vec4(mix(gl_FragColor.rgb, c.rgb, c.a), 1.0);
+  }
+
+  gl_FragColor *= smoothstep(1.0, 0.7, distance(vec2(0.0, 0.5), p));
+  gl_FragColor += vec4(1.0,0.7,0.5,1.0)*smoothstep(0.7, 0.0, distance(vec2(-0.1, 0.7), p));
+
+}
+</script>
+
+<script src="../../glsl.js" type="text/javascript"></script>
+<script src="../lib/Loader.js" type="text/javascript"></script>
+<script type="text/javascript">
+if (!Glsl.supported()) alert("WebGL is not supported.");
+
+Loader.image("mario.png", function (marioSpriteImg) {
+
+  function Vec2 (x, y) {
+    this.x = x;
+    this.y = y;
+  }
+  Vec2.prototype.multiply = function (scalar) {
+    this.x *= scalar;
+    this.y *= scalar;
+  }
+
+  function Mario (x, y) {
+    this.position = new Vec2(x, y);
+    this.initialPosition = new Vec2(x, y);
+    this.size = new Vec2(32, 64);
+    this.tile = new Vec2(0, 0);
+    this.colorRandom = Math.random();
+    this.speed = 0.003 + 0.0005*Math.random() + (Math.random()<0.2 ? 0.01*Math.random() : 0);
+  }
+
+  var run = [
+    new Vec2(0,1),
+    new Vec2(1,1),
+    new Vec2(2,1),
+    new Vec2(3,1),
+  ];
+
+  var marios = [];
+  var canvas = document.getElementById("viewport");
+  canvas.width = window.innerWidth;
+
+  var glsl = Glsl({
+    canvas: canvas,
+    fragment: document.getElementById("fragment").textContent,
+    variables: {
+      marioSpriteSampler: marioSpriteImg,
+      marioSpriteInfos: {
+        size: new Vec2(256,192),
+        tileSize: new Vec2(32,64)
+      },
+      mariosLength: marios.length,
+      marios: marios,
+      time: 0 // The time in ms
+    },
+    init: function () {
+      var self = this;
+      var w = 32;
+      for (var i=0; i<10; ++i) {
+        marios.push(new Mario((i/10)*(this.canvas.width+w), 0));
+      }
+      for (var i=0; i<5; ++i) {
+        var m = new Mario((i/5)*(this.canvas.width+w*2), 64);
+        m.size.multiply(2);
+        marios.push(m);
+      }
+      for (var i=0; i<5; ++i) {
+        var m = new Mario((i/5)*(this.canvas.width+w*3), 192);
+        m.size.multiply(3);
+        marios.push(m);
+      }
+    },
+    update: function (time, delta) {
+      var w = this.canvas.width;
+      this.set("time", time);
+      for (var i=0; i<marios.length; ++i) {
+        var m = marios[i];
+        var t = Math.floor(time / 0.4*m.speed);
+        m.tile = run[t % run.length];
+        m.position.x -= m.size.x*m.speed*delta;
+        if (m.position.x < -m.size.x) {
+          m.position.x = w;
+        }
+      }
+      this.set("mariosLength", marios.length);
+      this.sync("marios");
+    }
+  }).start();
+
+  window.addEventListener("resize", function () {
+    glsl.setSize(window.innerWidth, canvas.height);
+  });
+
+  window.addEventListener('focus', function() {
+    glsl.start();
+    canvas.style.opacity = 1.0;
+  });
+
+  window.addEventListener('blur', function() {
+    glsl.stop();
+    canvas.style.opacity = 0.5;
+  });
+
+  G = glsl;
+
+});
+</script>
+</body>
+</html>

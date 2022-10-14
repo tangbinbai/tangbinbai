@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+<style type="text/css">
+  body, html {
+    font-family: "Fjalla One";
+  }
+  a {
+    color: #000;
+  }
+  #wrapper {
+    margin: 0 auto;
+    width: 640px;
+  }
+</style>
+
+<a href="https://github.com/gre/glsl.js"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+
+<div id="wrapper">
+
+<h1>Bouncing balls with <a href="http://github.com/gre/glsl.js">glsl.js</a> ...</h1>
+
+<canvas id="game" width="640" height="400"></canvas>
+
+<script id="fragment" type="x-shader/x-fragment">
+  precision mediump float;
+  uniform vec2 resolution;
+  uniform float time;
+
+  #define MAX_BALLS 100
+
+  struct Ball {
+    vec2 center;
+    float radius;
+  };
+
+  uniform Ball balls[MAX_BALLS];
+  uniform int ballsLength;
+
+  bool inCircle (vec2 p, vec2 center, float radius) {
+    vec2 ratio = resolution.xy / resolution.x;
+    return distance(p*ratio, center*ratio) < radius;
+  }
+
+  bool inBall(vec2 p, Ball b) {
+    return inCircle(p, b.center, b.radius);
+  }
+
+  void main () {
+    vec2 p = gl_FragCoord.xy / resolution.xy;
+    float z = 0.5+0.5*smoothstep(-1.0, 1.0, cos(time * 0.005));
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+    for (int i=0; i<MAX_BALLS; ++i) { if (i>=ballsLength) break;
+      if (inBall(p, balls[i])) {
+        gl_FragColor = vec4(p.x, p.y, z, 1.0);
+      }
+    }
+  }
+</script>
+
+<script type="text/javascript" src="../../glsl.js"></script>
+
+<script type="text/javascript">
+  if (!Glsl.supported()) alert("WebGL is not supported.");
+
+  function Vec2 (x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  function Ball (center, radius, velocity) {
+    this.center = center;
+    this.radius = radius;
+    this.velocity = velocity;
+  }
+
+  Ball.prototype.update = function (time, delta) {
+    this.center.x = this.center.x + this.velocity.x * delta;
+    this.center.y = this.center.y + this.velocity.y * delta;
+    if (this.center.y < 0) {
+      this.center.y = 0;
+      this.velocity.y *= -1;
+    }
+    if (this.center.x < 0) {
+      this.center.x = 0;
+      this.velocity.x *= -1;
+    }
+    if (this.center.y > 1) {
+      this.center.y = 1;
+      this.velocity.y *= -1;
+    }
+    if (this.center.x > 1) {
+      this.center.x = 1;
+      this.velocity.x *= -1;
+    }
+  }
+
+  Glsl({
+    canvas: document.getElementById("game"),
+    fragment: document.getElementById("fragment").textContent,
+    variables: {
+      time: 0,
+      balls: [],
+      ballsLength: 0
+    },
+  init: function () {
+    for (var i = 0; i<this.defines.MAX_BALLS; ++i) {
+      this.variables.balls.push(new Ball(new Vec2(Math.random(), Math.random()), 0.01+0.01*Math.random(), new Vec2(0.001*Math.random(), 0.001*Math.random())));
+    }
+  },
+    update: function (time, delta) {
+      this.set("time", time);
+      this.variables.balls.forEach(function (ball) {
+        ball.update(time, delta);
+      });
+      this.set("ballsLength", this.variables.balls.length);
+      this.sync("balls");
+    }
+  }).start();
+</script>
+
+<h2>... made in 20 minutes during this video:</h2>
+<iframe width="640" height="480" src="http://www.youtube.com/embed/kxBkfy_8JEs" frameborder="0" allowfullscreen></iframe>
+<p style="text-align: center">See also: <a href="http://blog.greweb.fr/?p=2130">Technical article on glsl.js</a></p>
+<h2>Source code</h2>
+<script src="https://gist.github.com/gre/4976345.js"></script>
+<a href="..">Back to more examples</a>
+
+</div>

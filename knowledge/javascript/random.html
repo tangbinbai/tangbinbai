@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html data-use-rem>
+  <head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <title>测试随机数</title>
+  </head>
+  <style type="text/css">
+  	.pointsWrap{
+  		position: fixed;
+  		top: 0;
+  		left: 0;
+  		right: 0;
+  		bottom: 0;
+  		background: #eeeeee;
+  	}
+  	.point{
+  		position: absolute;
+  		width:1px;
+  		height: 1px;
+  		background: green;
+  	}
+  </style>
+  <body ontouchstart="">
+  </body>
+  <script type="text/javascript">
+  	
+  	const get2DPoints=(number)=>{
+  		var points=[];
+  		while(number--){
+  			points.push({
+  				x:Math.random(),
+  				y:Math.random()
+  			})
+  		}
+  		return points;
+  	}
+
+
+
+  	var points=get2DPoints(80000);
+	var pointsWrap=document.createElement("div");
+	pointsWrap.setAttribute("class","pointsWrap");
+	var point;
+  	points.map((item,index)=>{
+  		point=document.createElement("div");
+  		point.setAttribute("class","point");
+  		point.style.left=item.x*window.screen.availWidth+"px";
+  		point.style.top=item.y*window.screen.availHeight+"px";
+  		pointsWrap.appendChild(
+  			point
+  		);
+  	})
+  	document.body.append(pointsWrap)
+  </script>
+</html>

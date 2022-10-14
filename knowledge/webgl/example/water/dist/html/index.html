@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html data-use-rem>
+  <head>
+<script id="Users/tangbin/git/tangbindu.github.io/knowledge/webgl/example/water/dist/js/vertex.glsl" type="x-shader/x-vertex" >
+// file=""//定义的的变量不能再改变
+attribute vec4 position;
+attribute float itime;
+//resolution屏幕的宽，高
+attribute vec2 iresolution;
+varying float time;
+varying vec2 resolution;
+void main() {
+  time=itime;
+  resolution=iresolution;
+  gl_Position=vec4(
+    position.x,
+    position.y,
+    position.z,
+    position.w
+  );
+}
+</script>
+
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <title>webgl demo</title>
+    <link rel="stylesheet" href="../css/index.css">
+  </head>
+  <body ontouchstart="">
+    <div class="page-single">
+      <canvas id="webgl_demo" class="webgl"></canvas>
+    </div>
+    <script src="../js/util.js"></script>
+    <script src="../js/index.js"></script>
+  </body>
+</html>

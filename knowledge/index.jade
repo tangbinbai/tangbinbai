@@ -1,0 +1,91 @@
+doctype html
+html(data-use-rem)
+  head
+    meta(charset="utf-8")
+    meta(name="format-detection", content="telephone=no")
+    meta(name="viewport", content="width=device-width,initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
+    meta(name="apple-mobile-web-app-capable", content="yes")
+    meta(name="apple-mobile-web-app-status-bar-style", content="black")
+    meta(name="description",content="")
+    meta(name="keywords",content="")
+    title 笔记
+    //- 适用于 Retina 屏的 iPad
+    link(rel="apple-touch-icon-precomposed" sizes="144x144" href="./app144x144.png")
+    //- 适用于 Retina 屏的 iPhone
+    link(rel="apple-touch-icon-precomposed" sizes="120x120" href="./app120x120.png")
+    link(rel="stylesheet",href="./static/css/code.css")
+    link(rel="stylesheet",href="./index.css")
+  body(ontouchstart="")
+    style.
+    #choisePage.unfold
+      .item webgl
+      .item canvas
+      .item es6
+      .item typescript
+      .item egret
+      .item fun
+      .item javascript
+      .item markdown
+      .item npm
+      .item webpack
+      .item weex
+      .item vue
+      .item os
+      .item laya
+      .item nodejs
+      .item mock
+      .item book
+      .item linux
+      .item shell
+      #touch 
+    #content.markdown-body
+    script(src="./static/js/zepto.min.js")
+    script(src="./static/js/marked.min.js")
+    script.
+      function run(){
+        var s=document.createElement("script");
+        s.setAttribute("src","./static/js/run_prettify.js");
+        document.body.appendChild(s);
+      }
+      $("#touch").bind("click",function(){
+        $(this).parent().toggleClass("unfold");
+      });
+      //ajax请求文件
+      function AjaxGetFile(path,callback){
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState == 4 && xmlhttp.status == 200 && callback) {
+            callback(xmlhttp.responseText);
+          }
+        };
+        xmlhttp.open("GET", path, true);
+        xmlhttp.send();
+      };
+      var path=$("#prettify").attr("src");
+      //- console.dir($("#prettify"));
+      var content=document.getElementById('content');
+      //默认启动
+      var defaultView="book"
+      //如果浏览器有地址指向
+      var pagename=location.search.slice(1);
+      defaultView =pagename? pagename : defaultView;
+      AjaxGetFile("./"+defaultView+"/learn.md",function(data){
+        content.innerHTML =marked(data);
+        $("pre").addClass("prettyprint lang-js");
+        run();
+      })
+      $("#choisePage .item").bind("click",function(){
+        var name=$(this).html();
+        AjaxGetFile("./"+name+"/learn.md",function(data){
+          content.innerHTML =marked(data);
+          $("pre").addClass("prettyprint lang-js");
+          run();
+        })
+      })
+
+
+
+
+
+
+

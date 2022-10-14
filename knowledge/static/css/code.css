@@ -1,0 +1,221 @@
+
+/*私有*/
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+    color: #444;
+}
+h1 {
+    font-size: 32px;
+    margin: 30px 0;
+    text-align:center;
+}
+h2 {
+    position: relative;
+    font-size: 24px;
+    padding-left: 15px;
+}
+h3 {
+    font-size: 1.17em;
+    color:#444;
+    padding:3px;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+h4 {
+    margin: 15px 0;
+}
+h2:before {
+    content: '';
+    width: 5px;
+    background: #f66;
+    position: absolute;
+    left: 0px;
+    height: 75%;
+    top: 12%;
+}
+blockquote {
+    margin: 2em 0;
+    padding-left: 10px;
+    border-left: 10px solid #e6e6e6;
+}
+p {
+    line-height: 1.35em;
+    padding:5px;
+}
+li {
+    line-height: 1.5em;
+}
+pre{
+  background-color:#e9e9e9;
+  border-radius:1px;
+  padding:10px;
+  margin:5px;
+  overflow: scroll;
+  -webkit-overflow-scrolling:touch;
+  font-size: 12px;
+}
+a {
+    text-decoration: none;
+    color: #f66;
+    border-bottom: 2px solid transparent;
+}
+a:hover {
+    color: #f33;
+    border-bottom-color: #f33;
+}
+
+/*! Color themes for Google Code Prettify | MIT License | github.com/jmblog/color-themes-for-google-code-prettify */
+.prettyprint {
+  background: #1d1f21;
+  font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace;
+  border: 0 !important;
+}
+
+.pln {
+  color: #c5c8c6;
+}
+
+/* Specify class=linenums on a pre to get line numbering */
+ol.linenums {
+  margin-top: 0;
+  margin-bottom: 0;
+  color: #969896;
+}
+
+li.L0,
+li.L1,
+li.L2,
+li.L3,
+li.L4,
+li.L5,
+li.L6,
+li.L7,
+li.L8,
+li.L9 {
+  padding-left: 1em;
+  background-color: #1d1f21;
+  list-style-type: decimal;
+}
+
+@media screen {
+
+  /* string content */
+
+  .str {
+    color: #b5bd68;
+  }
+
+  /* keyword */
+
+  .kwd {
+    color: #68d8ef;
+  }
+
+  /* comment */
+
+  .com {
+    color: #969896;
+  }
+
+  /* type name */
+
+  .typ {
+    color: #81a2be;
+  }
+
+  /* literal value */
+
+  .lit {
+    color: #de935f;
+  }
+
+  /* punctuation */
+
+  .pun {
+    color: #f92670;
+   /* color: #f92670; */
+    /*color: #a6e22e;*/
+  }
+
+  /* lisp open bracket */
+
+  .opn {
+    color: #c5c8c6;
+  }
+
+  /* lisp close bracket */
+
+  .clo {
+    color: #c5c8c6;
+  }
+
+  /* markup tag name */
+
+  .tag {
+    color: #cc6666;
+  }
+
+  /* markup attribute name */
+
+  .atn {
+    color: #de935f;
+  }
+
+  /* markup attribute value */
+
+  .atv {
+    color: #8abeb7;
+  }
+
+  /* declaration */
+
+  .dec {
+    color: #de935f;
+  }
+
+  /* variable name */
+
+  .var {
+    color: #cc6666;
+  }
+
+  /* function name */
+
+  .fun {
+    color: #81a2be;
+  }
+}
+
+pre.prettyprint{
+  padding: 10px;
+}
+
+
+table {
+  background-color: #fff;
+  border-radius: 3px;
+  border-collapse: collapse;
+  border: 1px solid #8694b5;
+  width: 100%;
+}
+table th, table td {
+  min-height: 2em;
+  padding: .5em;
+  border: 1px solid #fff;
+}
+table th {
+  font-size: 14px;
+  background-color: #8694b5;
+  color: #fff;
+}
+table td {
+  font-size: 12px;
+  color: #939bae;
+  background-color: #f5f8fe;
+}
+ul{
+  padding:10px;
+}
+
+
