@@ -1,4 +1,4 @@
-*{margin:0;padding:0}
+// *{margin:0;padding:0}
 
 body {
   font-family:'Montserrat','Helvetica Neue', Helvetica, STHeiTi, sans-serif;
@@ -33,7 +33,7 @@ html,body{
       background-color:rgba(0,0,0,0);
       min-width: 100px;
       &:before{
-        content: "展开"
+        content: "点击展开"
       }
     }
   }
@@ -45,7 +45,7 @@ html,body{
     min-width: 44px;
     touch-action:none;
     &:before{
-      content: "折叠"
+      content: "点击折叠"
     }
   }
   .item{

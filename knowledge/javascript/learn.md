@@ -1,4 +1,25 @@
 # javascript
+
+## debounce
+    const debounce = (func, delay) => {
+        let debounceTimer
+        return function() {
+            clearTimeout(debounceTimer)
+            debounceTimer= setTimeout(() => func(), delay)
+        }
+    } 
+
+    const clickToSubmit=debounce(()=>{
+    console.log("你点击再快，300ms我只会执行一次")
+    },300)
+
+    let count=1, timer = setInterval(()=>{
+    console.log(`点击了${count}次`)
+    clickToSubmit();
+    if(count++===10){
+        clearInterval(timer);
+    }
+    },200)
 ## 颜色进制转换
     const rgba2decimal=(RGBAColor)=>{
         const rgba=RGBAColor.match(/\.?\d+/g);

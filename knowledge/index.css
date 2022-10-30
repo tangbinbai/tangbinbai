@@ -1,11 +1,6 @@
 @charset "UTF-8";
-* {
-  margin: 0;
-  padding: 0;
-}
-
 body {
-  font-family: 'Montserrat','Helvetica Neue', Helvetica, STHeiTi, sans-serif;
+  font-family: "Montserrat", "Helvetica Neue", Helvetica, STHeiTi, sans-serif;
   font-weight: 400;
   font-size: 14px;
   word-spacing: 1px;
@@ -33,17 +28,17 @@ html, body {
   font-size: 12px;
 }
 #choisePage.unfold {
-  opacity: .1;
+  /* opacity: 0.1; */
 }
 #choisePage.unfold .item {
   display: none;
 }
 #choisePage.unfold #touch {
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
   min-width: 100px;
 }
 #choisePage.unfold #touch:before {
-  content: "展开";
+  content: "点击展开";
 }
 #choisePage #touch {
   text-align: center;
@@ -51,17 +46,19 @@ html, body {
   height: 44px;
   line-height: 44px;
   min-width: 44px;
-  touch-action: none;
+  -ms-touch-action: none;
+      touch-action: none;
 }
 #choisePage #touch:before {
-  content: "折叠";
+  content: "点击折叠";
 }
 #choisePage .item {
   background-color: rgba(255, 255, 255, 0.9);
   padding: 10px;
   min-width: 100px;
   border-bottom: 1px solid #e0e0e0;
-  touch-action: none;
+  -ms-touch-action: none;
+      touch-action: none;
 }
 #choisePage .item:active {
   background-color: rgba(0, 0, 0, 0.8);
@@ -72,6 +69,6 @@ html, body {
     background-position: left bottom;
     background-repeat: repeat-x;
     -webkit-background-size: 100% 1px;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.5, transparent), color-stop(0.5, #e0e0e0));
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.5, rgba(0, 0, 0, 0)), color-stop(0.5, #e0e0e0));
   }
 }
