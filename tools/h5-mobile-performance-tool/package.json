@@ -1,0 +1,15 @@
+{
+  "name": "v2console",
+  "version": "1.0.0",
+  "description": "安装全局 npm install typescript",
+  "main": "index.js",
+  "scripts": {
+    "dev":"tsc --watch & http-server ./dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.woa.com:bowentang/v2code.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
