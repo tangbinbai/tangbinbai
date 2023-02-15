@@ -2,6 +2,63 @@
 
 ## code bad smell
 
+    // bad
+    setTimeout(restart, 36000000);
+    // good
+    const MILLISECONDS_PER_HOUR = 60 * 60 * 1000; 
+
+
+    // bad
+    type User = {
+        userName: string;
+        userLastName: string;
+        userAge: number;
+    }
+    // good
+    type User = {
+        name: string;
+        lastName: string;
+        age: number;
+    }
+
+    // bad
+    type UserStatus = 'online' | 'offline';
+    function createUser(
+        name: string, 
+        lastName: string, 
+        age: number, 
+        status: UserStatus
+    ){}
+    // good
+    type UserStatus = 'online' | 'offline';
+    type User = { 
+        name: string, 
+        lastName: string, 
+        age: number, 
+        status: UserStatus 
+    };
+    function createUser(user: User) {}
+
+    // bad (it’s hard to debug)
+    myVariable && myFunction();
+    // good
+    if (myVariable) {
+        myFunction()
+    }
+
+    // bad (condition branch wrote into the js statement)
+    <span>{user.name && user.lastName && renderUserInfo()}</span>
+    const renderUserInfo = () => {
+        return <span>{`${user.name} ${user.lastName}`}</span>;
+    };
+    // good 
+    const renderUserInfo = () => {
+    if (user.name && user.lastName) {
+        return <span>{`${user.name} ${user.lastName}`}</span>;
+    }
+        return null;
+    };
+
 ## debounce
     const debounce = (func, delay) => {
         let debounceTimer
