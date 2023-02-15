@@ -1,5 +1,7 @@
 # javascript
 
+## code bad smell
+
 ## debounce
     const debounce = (func, delay) => {
         let debounceTimer
