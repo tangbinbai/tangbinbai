@@ -59,6 +59,30 @@
         return null;
     };
 
+    // bad
+    type User = {
+        name: string | undefined,
+        lastName: string | undefined,
+        age: number | undefined,
+    };
+    function createUser(user: User) {
+        user.name = user.name || 'User';
+        user.lastName = user.lastName || '';
+        user.age = user.age || 18;
+        // ...
+    }
+
+    // good
+    function createUser(user: User) {
+        const userWithDefaultValues = {
+            name: 'User',
+            lastName: '',
+            age: 18,
+            ...user, // look here
+        };
+       // ...
+    }
+
 ## debounce
     const debounce = (func, delay) => {
         let debounceTimer
