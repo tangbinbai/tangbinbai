@@ -103,6 +103,12 @@
         clearInterval(timer);
     }
     },200)
+## 析构参数
+    const log = (srcFun) => {
+    return (...args) => { // look at this 
+        console.log(args)
+    }
+    }
 ## 颜色进制转换
     const rgba2decimal=(RGBAColor)=>{
         const rgba=RGBAColor.match(/\.?\d+/g);
